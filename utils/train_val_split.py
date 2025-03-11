@@ -1,21 +1,18 @@
-# Split between train and val folders
-
 from pathlib import Path
+from sklearn.model_selection import train_test_split
 import random
 import os
 import sys
 import shutil
 import argparse
 
-
 # Define and parse user input arguments
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--datapath', help='Path to data folder containing image and annotation files',
                     required=True)
 parser.add_argument('--train_pct', help='Ratio of images to go to train folder; \
-                    the rest go to validation folder (example: ".8")',
-                    default=.8)
+                    the rest go to validation and test folders (example: ".7")',
+                    default=.7)
 
 args = parser.parse_args()
 
@@ -30,6 +27,7 @@ if train_percent < .01 or train_percent > 0.99:
    print('Invalid entry for train_pct. Please enter a number between .01 and .99.')
    sys.exit(0)
 val_percent = 1 - train_percent
+test_percent = 0.1
 
 # Define path to input dataset 
 input_image_path = os.path.join(data_path,'images')
@@ -41,13 +39,14 @@ train_img_path = os.path.join(cwd,'data/train/images')
 train_txt_path = os.path.join(cwd,'data/train/labels')
 val_img_path = os.path.join(cwd,'data/validation/images')
 val_txt_path = os.path.join(cwd,'data/validation/labels')
+test_img_path = os.path.join(cwd,'data/test/images')
+test_txt_path = os.path.join(cwd,'data/test/labels')
 
 # Create folders if they don't already exist
-for dir_path in [train_img_path, train_txt_path, val_img_path, val_txt_path]:
+for dir_path in [train_img_path, train_txt_path, val_img_path, val_txt_path, test_img_path, test_txt_path]:
    if not os.path.exists(dir_path):
       os.makedirs(dir_path)
       print(f'Created folder at {dir_path}.')
-
 
 # Get list of all images and annotation files
 img_file_list = [path for path in Path(input_image_path).rglob('*')]
@@ -56,31 +55,23 @@ txt_file_list = [path for path in Path(input_label_path).rglob('*')]
 print(f'Number of image files: {len(img_file_list)}')
 print(f'Number of annotation files: {len(txt_file_list)}')
 
-# Determine number of files to move to each folder
-file_num = len(img_file_list)
-train_num = int(file_num*train_percent)
-val_num = file_num - train_num
-print('Images moving to train: %d' % train_num)
-print('Images moving to validation: %d' % val_num)
+# Split the data into training, validation, and testing sets
+train_img_files, temp_img_files, train_txt_files, temp_txt_files = train_test_split(img_file_list, txt_file_list, test_size=0.3, random_state=42)
+val_img_files, test_img_files, val_txt_files, test_txt_files = train_test_split(temp_img_files, temp_txt_files, test_size=0.3333, random_state=42)
 
-# Select files randomly and copy them to train or val folders
-for i, set_num in enumerate([train_num, val_num]):
-  for ii in range(set_num):
-    img_path = random.choice(img_file_list)
-    img_fn = img_path.name
-    base_fn = img_path.stem
-    txt_fn = base_fn + '.txt'
-    txt_path = os.path.join(input_label_path,txt_fn)
+# Copy files to the respective folders
+for img_path, txt_path in zip(train_img_files, train_txt_files):
+    shutil.copy(img_path, os.path.join(train_img_path, img_path.name))
+    shutil.copy(txt_path, os.path.join(train_txt_path, txt_path.name))
 
-    if i == 0: # Copy first set of files to train folders
-      new_img_path, new_txt_path = train_img_path, train_txt_path
-    elif i == 1: # Copy second set of files to the validation folders
-      new_img_path, new_txt_path = val_img_path, val_txt_path
+for img_path, txt_path in zip(val_img_files, val_txt_files):
+    shutil.copy(img_path, os.path.join(val_img_path, img_path.name))
+    shutil.copy(txt_path, os.path.join(val_txt_path, txt_path.name))
 
-    shutil.copy(img_path, os.path.join(new_img_path,img_fn))
-    #os.rename(img_path, os.path.join(new_img_path,img_fn))
-    if os.path.exists(txt_path): # If txt path does not exist, this is a background image, so skip txt file
-      shutil.copy(txt_path,os.path.join(new_txt_path,txt_fn))
-      #os.rename(txt_path,os.path.join(new_txt_path,txt_fn))
+for img_path, txt_path in zip(test_img_files, test_txt_files):
+    shutil.copy(img_path, os.path.join(test_img_path, img_path.name))
+    shutil.copy(txt_path, os.path.join(test_txt_path, txt_path.name))
 
-    img_file_list.remove(img_path)
+print('Images moved to train: %d' % len(train_img_files))
+print('Images moved to validation: %d' % len(val_img_files))
+print('Images moved to test: %d' % len(test_img_files))
