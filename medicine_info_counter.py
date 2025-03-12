@@ -1,6 +1,4 @@
-##### Candy Calorie Counter #####
-
-
+##### Pharmaceutical Info Counter #####
 
 # Description:
 # This script uses a custom YOLO candy detection model to locate and identify pieces of candy in a live camera view.
