@@ -1,4 +1,5 @@
 ##### Pharmaceutical Info Counter #####
+
 # Description:
 # This script uses a custom YOLO candy detection model to locate and identify pieces of candy in a live camera view.
 # It references a dictionary storing nutritional info about each piece of candy, and tallies the total amount
@@ -11,7 +12,7 @@ import cv2
 from ultralytics import YOLO
 
 # Define path to model and other user variables
-model_path = 'yolo11s_candy_model.pt'  # Path to model
+model_path = 'my_model.pt'             # Path to model
 min_thresh = 0.50                      # Minimum detection threshold
 cam_index = 0                          # Index of USB camera
 imgW, imgH = 1024, 600                 # Resolution to run USB camera at
