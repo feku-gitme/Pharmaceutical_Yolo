@@ -1,11 +1,11 @@
 ##### Candy Calorie Counter #####
 
-# Author: Evan Juras, EJ Technology Consultants, https://ejtech.io
+
 
 # Description:
 # This script uses a custom YOLO candy detection model to locate and identify pieces of candy in a live camera view.
-# It references a dictionary storing nutritional info about each piece of candy, and tallies the total amount
-# of sugar and calories from the candy present in the camera's view.
+# It references a dictionary storing pharmaceutical info about each piece of tablet and capsule, and tallies the generic name,
+# dosage, uses, and instruction the medecine present in the camera's view.
 
 # Import necessary packages
 import os
@@ -73,8 +73,6 @@ brand_info = {
     'Tuseran Forte': ['Dextromethorphan Hydrobromide + Phenylephrine Hydrochloride + Paracetamol', '15 mg/ 10 mg/ 325 mg', 'Used to relief cough, clogged nose, ponstnasal drip, headache, body aches and fever.', 'Adults and Children 12yrs and older: 1 capsule every 6 hrs.'],
     'Ventrex-G': ['Salbutamol Guaitenesin', '2 mg', 'Used to relieve and prevent breathing difficulties in conditions like asthma.', '2-3mg 3-4 times daily may be increased up to max of 8mg 3-4 times daily.'],
     'Zosec': ['Omperazole', '20 mg', 'Used in treatment of acidity, heartburn, acid reflux and peptic ulcer.', 'once a day (every 24hrs) for 14 days before eating'],
-    'BrandB': ['Generic Name B', 'DosageB', 'UsesB', 'Active Ingredients B', 'Instructions B'],
-    
     
     # Add more brands as needed
 }
