@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--datapath', help='Path to data folder containing image and annotation files',
                     required=True)
 parser.add_argument('--train_pct', help='Ratio of images to go to train folder; \
-                    the rest go to validation and test folders (example: ".7")',
+                    the rest go to validation folder (example: ".7")',
                     default=.7)
 
 args = parser.parse_args()
@@ -27,7 +27,7 @@ if train_percent < .01 or train_percent > 0.99:
    print('Invalid entry for train_pct. Please enter a number between .01 and .99.')
    sys.exit(0)
 val_percent = 1 - train_percent
-test_percent = 0.1
+test_percent = 0
 
 # Define path to input dataset 
 input_image_path = os.path.join(data_path,'images')
@@ -39,11 +39,9 @@ train_img_path = os.path.join(cwd,'data/train/images')
 train_txt_path = os.path.join(cwd,'data/train/labels')
 val_img_path = os.path.join(cwd,'data/validation/images')
 val_txt_path = os.path.join(cwd,'data/validation/labels')
-test_img_path = os.path.join(cwd,'data/test/images')
-test_txt_path = os.path.join(cwd,'data/test/labels')
 
 # Create folders if they don't already exist
-for dir_path in [train_img_path, train_txt_path, val_img_path, val_txt_path, test_img_path, test_txt_path]:
+for dir_path in [train_img_path, train_txt_path, val_img_path, val_txt_path]:
    if not os.path.exists(dir_path):
       os.makedirs(dir_path)
       print(f'Created folder at {dir_path}.')
@@ -55,9 +53,8 @@ txt_file_list = [path for path in Path(input_label_path).rglob('*')]
 print(f'Number of image files: {len(img_file_list)}')
 print(f'Number of annotation files: {len(txt_file_list)}')
 
-# Split the data into training, validation, and testing sets
-train_img_files, temp_img_files, train_txt_files, temp_txt_files = train_test_split(img_file_list, txt_file_list, test_size=0.3, random_state=42)
-val_img_files, test_img_files, val_txt_files, test_txt_files = train_test_split(temp_img_files, temp_txt_files, test_size=0.3333, random_state=42)
+# Split the data into training and validation sets
+train_img_files, val_img_files, train_txt_files, val_txt_files = train_test_split(img_file_list, txt_file_list, test_size=0.3, random_state=42)
 
 # Copy files to the respective folders
 for img_path, txt_path in zip(train_img_files, train_txt_files):
@@ -68,10 +65,5 @@ for img_path, txt_path in zip(val_img_files, val_txt_files):
     shutil.copy(img_path, os.path.join(val_img_path, img_path.name))
     shutil.copy(txt_path, os.path.join(val_txt_path, txt_path.name))
 
-for img_path, txt_path in zip(test_img_files, test_txt_files):
-    shutil.copy(img_path, os.path.join(test_img_path, img_path.name))
-    shutil.copy(txt_path, os.path.join(test_txt_path, txt_path.name))
-
 print('Images moved to train: %d' % len(train_img_files))
 print('Images moved to validation: %d' % len(val_img_files))
-print('Images moved to test: %d' % len(test_img_files))
