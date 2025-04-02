@@ -11,8 +11,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--datapath', help='Path to data folder containing image and annotation files',
                     required=True)
 parser.add_argument('--train_pct', help='Ratio of images to go to train folder; \
-                    the rest go to validation folder (example: ".7")',
-                    default=.2)
+                    the rest go to validation folder (example: ".5")',
+                    default=.5)
 
 args = parser.parse_args()
 
@@ -54,7 +54,7 @@ print(f'Number of image files: {len(img_file_list)}')
 print(f'Number of annotation files: {len(txt_file_list)}')
 
 # Split the data into training and validation sets
-train_img_files, val_img_files, train_txt_files, val_txt_files = train_test_split(img_file_list, txt_file_list, test_size=0.3, random_state=42)
+train_img_files, val_img_files, train_txt_files, val_txt_files = train_test_split(img_file_list, txt_file_list, test_size=0.5, random_state=42)
 
 # Copy files to the respective folders
 for img_path, txt_path in zip(train_img_files, train_txt_files):
