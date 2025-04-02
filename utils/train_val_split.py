@@ -12,7 +12,7 @@ parser.add_argument('--datapath', help='Path to data folder containing image and
                     required=True)
 parser.add_argument('--train_pct', help='Ratio of images to go to train folder; \
                     the rest go to validation folder (example: ".7")',
-                    default=.7)
+                    default=.2)
 
 args = parser.parse_args()
 
