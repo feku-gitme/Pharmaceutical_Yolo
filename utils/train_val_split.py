@@ -14,8 +14,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--datapath', help='Path to data folder containing image and annotation files',
                     required=True)
 parser.add_argument('--train_pct', help='Ratio of images to go to train folder; \
-                    the rest go to validation folder (example: ".5")',
-                    default=.5)
+                    the rest go to validation folder (example: ".7")',
+                    default=.7)
 
 args = parser.parse_args()
 
