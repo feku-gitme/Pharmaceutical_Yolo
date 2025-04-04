@@ -20,7 +20,7 @@ train_percent = float(args.train_pct)
 
 # Check for valid entries
 if not os.path.isdir(data_path):
-    print('Directory specified by --datapath not found. Verify the path is correct and try again.')
+    print('Directory specified by --datapath not found. Verify the path is correct (and uses double back slashes if on Windows) and try again.')
     sys.exit(0)
 
 if train_percent < .01 or train_percent > 0.99:
@@ -46,21 +46,17 @@ for dir_path in [train_img_path, train_txt_path, val_img_path, val_txt_path]:
         os.makedirs(dir_path)
         print(f'Created folder at {dir_path}.')
 
-# Define the number of images to be selected per class
-num_images_per_class = 200
-
 # Get list of all images and annotation files
 img_file_list = [path for path in Path(input_image_path).rglob('*') if path.suffix in ['.jpg', '.jpeg', '.png']]
 txt_file_list = [path for path in Path(input_label_path).rglob('*') if path.suffix == '.txt']
 
-# Verify there are enough images for each class
 print(f'Number of image files: {len(img_file_list)}')
 print(f'Number of annotation files: {len(txt_file_list)}')
 
 # Group images by class
 class_images = {}
 for img_path in img_file_list:
-    class_name = img_path.stem.split('_')[0]  # Assuming class name is part of filename before an underscore
+    class_name = img_path.stem.split('_')[0]  # Assuming class name is part of the filename before an underscore
     if class_name not in class_images:
         class_images[class_name] = []
     class_images[class_name].append(img_path)
@@ -72,21 +68,15 @@ val_images = []
 for class_name, images in class_images.items():
     num_images = len(images)
     
-    # If a class has fewer than 200 images, use all the images from that class
-    if num_images < num_images_per_class:
-        print(f'Class {class_name} has only {num_images} images. Using all available images.')
-        selected_images = images
-    else:
-        # Otherwise, select 200 random images
-        selected_images = random.sample(images, num_images_per_class)
+    # Calculate how many images to take for training
+    num_train = int(num_images * train_percent)
     
-    # Split the selected images into train and validation sets
-    split_index = int(train_percent * len(selected_images))
-    train_images.extend(selected_images[:split_index])
-    val_images.extend(selected_images[split_index:])
+    # Randomly shuffle images for this class and split them
+    random.shuffle(images)
+    train_images.extend(images[:num_train])
+    val_images.extend(images[num_train:])
 
-print(f'Total images selected for training: {len(train_images)}')
-print(f'Total images selected for validation: {len(val_images)}')
+    print(f'Class {class_name}: {num_images} images, {num_train} for training, {num_images - num_train} for validation.')
 
 # Copy the selected images and annotations into the respective folders
 for img_path in train_images:
