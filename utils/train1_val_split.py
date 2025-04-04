@@ -65,23 +65,25 @@ for img_path in img_file_list:
         class_images[class_name] = []
     class_images[class_name].append(img_path)
 
-# Ensure that each class has at least num_images_per_class images
-for class_name, images in class_images.items():
-    if len(images) < num_images_per_class:
-        print(f'Warning: Class {class_name} has less than {num_images_per_class} images, skipping class.')
-        del class_images[class_name]  # Remove classes with fewer than 200 images
-
-# Randomly sample 200 images per class and split them into train and validation
+# Randomly sample images per class and split them into train and validation
 train_images = []
 val_images = []
 
 for class_name, images in class_images.items():
-    sampled_images = random.sample(images, num_images_per_class)  # Select 200 images randomly
-
+    num_images = len(images)
+    
+    # If a class has fewer than 200 images, use all the images from that class
+    if num_images < num_images_per_class:
+        print(f'Class {class_name} has only {num_images} images. Using all available images.')
+        selected_images = images
+    else:
+        # Otherwise, select 200 random images
+        selected_images = random.sample(images, num_images_per_class)
+    
     # Split the selected images into train and validation sets
-    split_index = int(train_percent * num_images_per_class)
-    train_images.extend(sampled_images[:split_index])
-    val_images.extend(sampled_images[split_index:])
+    split_index = int(train_percent * len(selected_images))
+    train_images.extend(selected_images[:split_index])
+    val_images.extend(selected_images[split_index:])
 
 print(f'Total images selected for training: {len(train_images)}')
 print(f'Total images selected for validation: {len(val_images)}')
