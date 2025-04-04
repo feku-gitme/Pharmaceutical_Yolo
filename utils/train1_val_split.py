@@ -67,8 +67,8 @@ for img_path in img_file_list:
 # Ensure that each class has at least num_images_per_class images
 for class_name, images in class_images.items():
     if len(images) < num_images_per_class:
-        print(f'Warning: Class {class_name} has less than {num_images_per_class} images.')
-        # Optionally, you could decide to skip such classes or handle them differently
+        print(f'Warning: Class {class_name} has less than {num_images_per_class} images, skipping class.')
+        del class_images[class_name]  # Remove classes with fewer than 200 images
 
 # Randomly sample 200 images per class and split them into train and validation
 train_images = []
