@@ -29,7 +29,7 @@ if train_percent < .01 or train_percent > 0.99:
 
 val_percent = 1 - train_percent
 
-# Define path to input dataset 
+# Define path to input dataset
 input_image_path = os.path.join(data_path, 'images')
 input_label_path = os.path.join(data_path, 'labels')
 
@@ -61,7 +61,7 @@ for img_path in img_file_list:
         class_images[class_name] = []
     class_images[class_name].append(img_path)
 
-# Randomly sample images per class and split them into train and validation
+# Split the images for each class into train and validation sets
 train_images = []
 val_images = []
 
